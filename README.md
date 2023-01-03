@@ -20,7 +20,7 @@
 
 ## التنصيب ع كويب
 
-اضغـط ع الـزر بالاسفـل 
+اضغـط ع الـزر بالاسفـل | كويب أصبحت مدفوعة 
 
 
 [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/apps/deploy?type=git&repository=github.com/rogerpq/RepthonAr&branch=Koyeb&name=repthon&env[APP_ID]=ضع_ابب_ايدي&env[API_HASH]=ضع_ايبي_هاش&env[ENV]=ANYTHING&env[DATABASE_URL]=قاعدة_البيانات&env[STRING_SESSION]=كود_تريمكس&env[TG_BOT_USERNAME]=معرف_البوت&env[TG_BOT_TOKEN]=توكن_البوت&env[ALIVE_NAME]=اسم_المستخدم&env[TZ]=Asia/Baghdad&env[COMMAND_HAND_LER]=.&env[HEROKU_API_KEY]=ضع_ايبي_كي&env[HEROKU_APP_NAME]=ضع_اسم_التطبيق)
@@ -28,7 +28,7 @@
 
 ## التنصيب ع هيروكو 
 
-اضغـط ع الـزر بالاسفـل 
+اضغـط ع الـزر بالاسفـل | هيروكو أصبحت مدفوعة
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)]([https://heroku.com/deploy?template=https://github.com/rogerpq/E_7_V)
 
