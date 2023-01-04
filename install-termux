@@ -13,4 +13,4 @@ else
     git clone https://github.com/rogerpq/RepthonAr
     cd RepthonAr
 fi
-bash resources/startup/termux.sh
+bash utils/termux.sh
