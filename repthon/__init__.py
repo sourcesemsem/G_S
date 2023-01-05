@@ -1,86 +1,100 @@
+# Ultroid - UserBot
+# Copyright (C) 2021-2022 TeamUltroid
+#
+# This file is a part of < https://github.com/TeamUltroid/Ultroid/ >
+# PLease read the GNU Affero General Public License in
+# <https://github.com/TeamUltroid/pyUltroid/blob/main/LICENSE>.
+
+import os
 import sys
-import time
 
-import heroku3
+from .version import __version__
 
-from .core.logger import logging
-from .core.session import sbb_b, tgbot
-from .helpers.functions.converter import Convert
-from .helpers.functions.musictool import *
-from .helpers.utils.utils import runasync
-from .sql_helper.globals import addgvar, delgvar, gvarstatus
+run_as_module = False
 
-__version__ = "3.2.0"
-__license__ = "GNU Affero General Public License v3.0"
-__author__ = "سورس ريبثون <https://t.me/Repthon/>"
-__copyright__ = f" حقوق سورس ريبثون (C) 2020 - 2022  {__author__}"
+class ULTConfig:
+    lang = "ar"
 
-sbb_b.version = __version__
-sbb_b.tgbot.version = __version__
-LOGS = logging.getLogger("𝐑𝐄𝐏𝐓𝐇𝐎𝐍")
-bot = sbb_b
-tbot = tgbot
+if sys.argv[0] == "-m":
+    run_as_module = True
 
-StartTime = time.time()
-jmthonversion = "7.2.0"
+    import time
 
+    from .Config import Var
+    from utils import *
+    from utils import sbb_b
+    from utils.startup import jmthonclient
+    from .core.session import sbb_b, tgbot
+    from utils .pluginmanager import sbb_b
+    from .version import repthon_version
 
-def close_connection(*_):
-    print("تم اغلاق الاتصال بالسورس")
-    runasync(sbb_b.disconnect())
-    sys.exit(143)
+    if not os.path.exists("plugins"):
+        LOGS.error(
+            "'plugins' folder not found!\nMake sure that, you are on correct path."
+        )
+        exit()
 
+    start_time = time.time()
+    _ult_cache = {}
+    _ignore_eval = []
 
-UPSTREAM_REPO_URL = Config.UPSTREAM_REPO
+    udB = UltroidDB()
+    update_envs()
 
-if Config.PRIVATE_GROUP_BOT_API_ID == 0:
-    if gvarstatus("PRIVATE_GROUP_BOT_API_ID") is None:
-        Config.BOTLOG = False
-        Config.BOTLOG_CHATID = "me"
+    LOGS.info(f"Connecting to {udB.name}...")
+    if udB.ping():
+        LOGS.info(f"Connected to {udB.name} Successfully!")
+
+    BOT_MODE = udB.get_key("BOTMODE")
+    DUAL_MODE = udB.get_key("DUAL_MODE")
+
+    if BOT_MODE:
+        if DUAL_MODE:
+            udB.del_key("DUAL_MODE")
+            DUAL_MODE = False
+        ultroid_bot = None
+
+        if not udB.get_key("TG_BOT_TOKEN"):
+            LOGS.critical(
+                '"TG_BOT_TOKEN" not Found! Please add it, in order to use "BOTMODE"'
+            )
+
+            sys.exit()
     else:
-        Config.BOTLOG_CHATID = int(gvarstatus("PRIVATE_GROUP_BOT_API_ID"))
-        Config.PRIVATE_GROUP_BOT_API_ID = int(gvarstatus("PRIVATE_GROUP_BOT_API_ID"))
-        Config.BOTLOG = True
+        repthon_bot = JmthonClient(
+            validate_session(Var.SESSION, LOGS),
+            udB=udB,
+            app_version=3.0.7,
+            device_model="Repthon",
+        )
+        repthon_bot.run_in_loop(autobot())
+
+    asst = JmthonClient(None, bot_token=udB.get_key("TG_BOT_TOKEN"), udB=udB)
+
+    if BOT_MODE:
+        ultroid_bot = asst
+        if udB.get_key("OWNER_ID"):
+            try:
+                repthon_bot.me = repthon_bot.run_in_loop(
+                    repthon_bot.get_entity(udB.get_key("OWNER_ID"))
+                )
+            except Exception as er:
+                LOGS.exception(er)
+    elif not asst.me.bot_inline_placeholder:
+        repthon_bot.run_in_loop(enable_inline(repthon_bot, asst.me.username))
+
+    vcClient = vc_connection(udB, repthon_bot)
+
+    _version_changes(udB)
+
+    HNDLR = udB.get_key("HNDLR") or "."
+    DUAL_HNDLR = udB.get_key("DUAL_HNDLR") or "/"
+    SUDO_HNDLR = udB.get_key("SUDO_HNDLR") or HNDLR
 else:
-    if str(Config.PRIVATE_GROUP_BOT_API_ID)[0] != "-":
-        Config.BOTLOG_CHATID = int(f"-{str(Config.PRIVATE_GROUP_BOT_API_ID)}")
-    else:
-        Config.BOTLOG_CHATID = Config.PRIVATE_GROUP_BOT_API_ID
-    Config.BOTLOG = True
+    print("Repthon 2022 © TeamRepthon")
 
-if Config.PM_LOGGER_GROUP_ID == 0:
-    if gvarstatus("PM_LOGGER_GROUP_ID") is None:
-        Config.PM_LOGGER_GROUP_ID = -100
-    else:
-        Config.PM_LOGGER_GROUP_ID = int(gvarstatus("PM_LOGGER_GROUP_ID"))
-elif str(Config.PM_LOGGER_GROUP_ID)[0] != "-":
-    Config.PM_LOGGER_GROUP_ID = int(f"-{str(Config.PM_LOGGER_GROUP_ID)}")
+    from logging import getLogger
 
-try:
-    if Config.HEROKU_API_KEY is not None or Config.HEROKU_APP_NAME is not None:
-        HEROKU_APP = heroku3.from_key(Config.HEROKU_API_KEY).apps()[
-            Config.HEROKU_APP_NAME
-        ]
-    else:
-        HEROKU_APP = None
-except Exception:
-    HEROKU_APP = None
+    LOGS = getLogger("𝐑𝐄𝐏𝐓𝐇𝐎𝐍")
 
-
-# تعريفات مهمة
-COUNT_MSG = 0
-USERS = {}
-COUNT_PM = {}
-LASTMSG = {}
-CMD_HELP = {}
-ISAFK = False
-AFKREASON = None
-CMD_LIST = {}
-SUDO_LIST = {}
-INT_PLUG = ""
-LOAD_PLUG = {}
-
-# متغيرات
-BOTLOG = Config.BOTLOG
-BOTLOG_CHATID = Config.BOTLOG_CHATID
-PM_LOGGER_GROUP_ID = Config.PM_LOGGER_GROUP_ID
+    repthon_bot = asst = udB = vcClient = None
