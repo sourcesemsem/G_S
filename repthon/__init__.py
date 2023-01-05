@@ -3,7 +3,6 @@ import sys
 import time
 
 import heroku3
-from config import config
 
 from .core.logger import logging
 from .core.session import sbb_b, tgbot
