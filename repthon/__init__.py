@@ -1,4 +1,3 @@
-import signal
 import sys
 import time
 
@@ -33,7 +32,6 @@ def close_connection(*_):
     sys.exit(143)
 
 
-signal.signal(signal.SIGTERM, close_connection)
 
 UPSTREAM_REPO_URL = Config.UPSTREAM_REPO
 
