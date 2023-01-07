@@ -23,7 +23,7 @@ LOGS = logging.getLogger("𝐑𝐄𝐏𝐓𝐇𝐎𝐍")
 cmdhr = Config.COMMAND_HAND_LER
 
 
-async def jmthons(session=None, client=None, session_name="Main"):
+async def jmthons(session=None, client=None, session_name="Master"):
     if session:
         LOGS.info(f"••• جار بدأ الجلسة [{session_name}] •••")
         try:
