@@ -21,7 +21,6 @@ from PIL import Image, ImageColor, ImageDraw, ImageFont, ImageOps
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest as unblock
 
-from ...Config import Config
 from ...core.logger import logging
 from ...sql_helper.globals import gvarstatus
 from ..resources.states import states
