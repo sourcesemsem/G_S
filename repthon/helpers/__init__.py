@@ -1,7 +1,6 @@
 from . import fonts
 from . import memeshelper as jmthonmemes
 from .aiohttp_helper import AioHttp
-from .utils import *
 
 flag = True
 check = 0
