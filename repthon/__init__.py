@@ -14,8 +14,6 @@ __license__ = "GNU Affero General Public License v3.0"
 __author__ = "سورس ريبثون <https://t.me/Repthon/>"
 __copyright__ = f" حقوق سورس ريبثون (C) 2020 - 2022  {__author__}"
 
-sbb_b.version = __version__
-sbb_b.tgbot.version = __version__
 LOGS = logging.getLogger("𝐑𝐄𝐏𝐓𝐇𝐎𝐍")
 bot = sbb_b
 tbot = tgbot
